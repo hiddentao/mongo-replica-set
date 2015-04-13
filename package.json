@@ -1,0 +1,38 @@
+{
+  "name": "mong-replica-set",
+  "version": "0.1.0",
+  "description": "Library for setting up Mongo DB replica sets on localhost. Useful for testing purposes.",
+  "main": "index.js",
+  "engines": {
+    "node": ">=0.10.x"
+  },
+  "scripts": {
+    "test": "node --harmony node_modules/.bin/gulp"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hiddentao/mongo-replica-set.git"
+  },
+  "keywords": [
+    "mongo",
+    "mongodb",
+    "replica"
+    "nosql",
+    "test"
+  ],
+  "author": "Ramesh Nair <ram@hiddentao.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hiddentao/mongo-replica-set/issues"
+  },
+  "devDependencies": {},
+  "homepage": "https://github.com/hiddentao/mongo-replica-set",
+  "dependencies": {
+    "bluebird": "^2.9.24",
+    "debug": "^2.1.3",
+    "eventemitter2": "^0.4.14",
+    "lodash": "^3.6.0",
+    "mongodb": "^2.0.27",
+    "shelljs": "^0.4.0"
+  }
+}

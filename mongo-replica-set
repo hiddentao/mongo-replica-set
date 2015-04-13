@@ -1,0 +1,12 @@
+#!/usr/bin/env node
+
+var ReplicaSet = require('./').ReplicaSet;
+
+
+var rs = new ReplicaSet();
+
+
+rs.start();
+  
+
+
