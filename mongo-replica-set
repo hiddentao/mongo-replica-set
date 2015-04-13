@@ -1,12 +1,20 @@
 #!/usr/bin/env node
 
-var ReplicaSet = require('./').ReplicaSet;
+var Q = require('bluebird'),
+  ReplicaSet = require('./').ReplicaSet;
 
 
 var rs = new ReplicaSet();
 
 
-rs.start();
-  
+rs.start()
+  .then(function() {
+    console.log('>>>> Replica set ready');
+  })
+  .catch(function(err) {
+    console.error(err);
 
+    console.log('>>>> Stopping replica set');
 
+    return rs.stop();
+  });
