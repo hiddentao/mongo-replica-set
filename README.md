@@ -1,7 +1,5 @@
 # mongo-replica-set
 
-[![NPM module](https://badge.fury.io/js/mongo-replica-set.png)](https://badge.fury.io/js/mongo-replica-set)
-
 Command-line tool and API to quickly setup a MongoDB replica set for 
 development purposes, based on the [official tutorial](http://docs.mongodb.org/manual/tutorial/deploy-replica-set-for-testing/).
 
