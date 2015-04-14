@@ -1,6 +1,6 @@
 # mongo-replica-set
 
-[![NPM module](https://badge.fury.io/js/robe.png)](https://badge.fury.io/js/robe)
+[![NPM module](https://badge.fury.io/js/mongo-replica-set.png)](https://badge.fury.io/js/mongo-replica-set)
 
 Command-line tool and API to quickly setup a MongoDB replica set for 
 development purposes, based on the [official tutorial](http://docs.mongodb.org/manual/tutorial/deploy-replica-set-for-testing/).
@@ -43,15 +43,24 @@ $ mongo-replica-set
 >>> Replica set ready
 ```
 
-You can then (in a new terminal window) use `mongo` to connect to the sets, 
+You can then (in a new terminal window) use `mongo` to connect to the instances, 
 which should be running at `localhost:27117`, `localhost:27118` and 
-`localhost:27119` respectively.
+`localhost:27119` respectively. Eg:
 
+```bash
+$ mongo --port 27117
+MongoDB shell version: 2.6.5
+connecting to: 127.0.0.1:27117/test
+rs_515_1429031406166:PRIMARY> show dbs;
+admin  (empty)
+local  0.281GB
+rs_515_1429031406166:PRIMARY> 
+```
 Press `CTRL+C` in the original window to terminate the instances and clean up 
 the replica set.
 
-If any errors occur during initialisation the command will exit and clean up 
-the replica set instances and data folders.
+_If any errors occur during initialisation the command will exit and clean up 
+the replica set instances and data folders._
 
 ### API
 
