@@ -64,13 +64,14 @@ the replica set instances and data folders._
 
 ### API
 
-Base usage:
+Basic usage:
 
 ```js
 var ReplicaSet = require('mongo-replica-set').ReplicaSet;
 
 var rs = new ReplicaSet();
 
+// returns a Promise
 rs.start()
   .then(function() {
     // started ok.
