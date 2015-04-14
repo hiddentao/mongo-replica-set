@@ -1,7 +1,7 @@
 {
   "name": "mong-replica-set",
   "version": "0.1.0",
-  "description": "Command-line tool and API for setting up MongoDB replica sets on localhost. Useful for testing purposes.",
+  "description": "Command-line tool and API for setting up MongoDB replica sets on localhost. Useful for development purposes.",
   "main": "index.js",
   "bin": {
     "mongo-replica-set": "./mongo-replica-set"
