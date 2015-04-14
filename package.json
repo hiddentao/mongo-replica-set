@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "description": "Command-line tool and API for setting up MongoDB replica sets on localhost. Useful for testing purposes.",
   "main": "index.js",
+  "bin": {
+    "mongo-replica-set": "./mongo-replica-set"
+  },
   "engines": {
     "node": ">=0.10.x"
   },
@@ -25,14 +28,12 @@
   "bugs": {
     "url": "https://github.com/hiddentao/mongo-replica-set/issues"
   },
-  "devDependencies": {},
   "homepage": "https://github.com/hiddentao/mongo-replica-set",
   "dependencies": {
     "bluebird": "^2.9.24",
-    "debug": "^2.1.3",
+    "commander": "^2.7.1",
     "eventemitter2": "^0.4.14",
     "lodash": "^3.6.0",
-    "mongodb": "^2.0.27",
     "shelljs": "^0.4.0"
   }
 }

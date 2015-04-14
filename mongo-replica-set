@@ -1,10 +1,31 @@
 #!/usr/bin/env node
 
-var Q = require('bluebird'),
+var program = require('commander'),
+  Q = require('bluebird'),
   ReplicaSet = require('./').ReplicaSet;
 
 
-var rs = new ReplicaSet();
+ 
+program
+  .version(require('./package.json').version)
+  .option('-d, --data [folder]', 'Base folder for data storage (Default: auto-created folder in system temp folder)', null)
+  .option('-n, --num [num]', 'No. of instances to launch (Default: 3)', 3)
+  .option('-p, --port [port]', 'Starting port number for instances (Default: 27117)', 27117)
+  .option('-v, --verbose', 'Verbose output')
+  .parse(process.argv);
+ 
+var config = {
+  numInstances: parseInt(program.num),
+  startPort: parseInt(program.port),
+  verbose: !!program.verbose,
+};
+
+if (program.data) {
+  config.data = program.data;
+}
+
+
+var rs = new ReplicaSet(config);
 
 
 rs.start()
