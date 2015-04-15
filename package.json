@@ -1,13 +1,13 @@
 {
   "name": "mong-replica-set",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Command-line tool and API for setting up MongoDB replica sets on localhost. Useful for development purposes.",
   "main": "index.js",
   "bin": {
     "mongo-replica-set": "./mongo-replica-set"
   },
   "engines": {
-    "node": ">=0.10.x"
+    "node": ">=0.10.0"
   },
   "scripts": {
     "test": "node --harmony node_modules/.bin/gulp"
