@@ -31,7 +31,7 @@ var rs = new ReplicaSet(config);
 
 rs.start()
   .then(function() {
-    console.log('>>>> Replica set ready');
+    console.log('>>>> Replica set ready: ' + rs.getHosts().join(', '));
   })
   .catch(function(err) {
     console.error(err);

@@ -27,6 +27,7 @@ var ReplicaSet = exports.ReplicaSet = function(options) {
   EventEmitter2.call(this);
 
   this.processes = [];
+  this._hosts = [];
   this.name = 'rs_' + parseInt(Math.random() * 1000) + '_' + Date.now();
 
   this.options = _.extend({
@@ -38,6 +39,13 @@ var ReplicaSet = exports.ReplicaSet = function(options) {
   }, options);
 };
 util.inherits(ReplicaSet, EventEmitter2);
+
+
+
+ReplicaSet.prototype.getHosts = function() {
+  return this._hosts;
+};
+
 
 
 
@@ -126,6 +134,8 @@ ReplicaSet.prototype.start = function() {
       async: true,
       silent: !self.options.verbose,
     });
+
+    self._hosts.push('127.0.0.1:' + port);
 
     self.log('Launched instance (pid ' + process.pid + ') listening on port ' + port + ', folder: ' + instanceDataFolder);
 

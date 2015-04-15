@@ -38,7 +38,7 @@ Thus for a basic setup involving 3 `mongod` instances simply run:
 
 ```bash
 $ mongo-replica-set
->>> Replica set ready
+>>> Replica set ready: 127.0.0.1:27117, 127.0.0.1:27118, 127.0.0.1:27119
 ```
 
 You can then (in a new terminal window) use `mongo` to connect to the instances, 
@@ -93,6 +93,15 @@ var rs = new ReplicaSet({
 
 rs.start();
 ```
+
+Once the replica set is running you can obtain the `hostname:port` connection 
+strings:
+
+```js
+var conn = rs.getHosts();
+
+// [ '127.0.0.1:55000', '127.0.0.1:55001', '127.0.0.1:55002']
+``` 
 
 ## Contributing
 
