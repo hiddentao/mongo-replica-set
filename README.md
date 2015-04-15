@@ -87,7 +87,8 @@ var rs = new ReplicaSet({
   numInstances: 5,
   startPort: 55000,       
   baseFolder: '/opt/data',
-  verbose: true
+  verbose: true,
+  useColors: false   /* Don't use colours when outputting to console */
 });
 
 rs.start();

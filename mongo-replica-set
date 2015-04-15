@@ -18,6 +18,7 @@ var config = {
   numInstances: parseInt(program.num),
   startPort: parseInt(program.port),
   verbose: !!program.verbose,
+  useColors: true,
 };
 
 if (program.data) {

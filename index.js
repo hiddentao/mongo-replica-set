@@ -1,6 +1,7 @@
 "use strict";
 
 var _ = require('lodash'),
+  colors = require('colors'),
   fs = require('fs'),
   EventEmitter2 = require('eventemitter2').EventEmitter2,
   Q = require('bluebird'),
@@ -19,6 +20,7 @@ var _ = require('lodash'),
  * @param {Object} [options.startPort] Port number to start allocating at (default is 27117).
  * @param {Object} [options.baseFolder] Base folder for instance data (default is system temporary folder).
  * @param {Boolean} [options.verbose] Whether to log progress. Default is `false`.
+ * @param {Boolean} [options.colors] Whether to use colours when outputting to console. Default is `false`.
  * @constructor
  */
 var ReplicaSet = exports.ReplicaSet = function(options) {
@@ -30,26 +32,35 @@ var ReplicaSet = exports.ReplicaSet = function(options) {
   this.options = _.extend({
     numInstances: 3,
     startPort: 27117,
-    verbose: false,
     baseFolder: path.join(shell.tempdir(), this.name),
+    verbose: false,
+    useColors: false,
   }, options);
 };
 util.inherits(ReplicaSet, EventEmitter2);
 
 
 
-ReplicaSet.prototype.log = function() {
+ReplicaSet.prototype.log = function(msg) {
   if (!this.options.verbose) {
     return;
   }
 
-  console.log.apply(console, arguments);
+  if (this.options.useColors) {
+    msg = colors.green(msg);
+  }
+
+  console.log(msg);
 };
 
 
 
-ReplicaSet.prototype.logErr = function() {
-  console.error.apply(console, arguments);
+ReplicaSet.prototype.logErr = function(msg) {
+  if (this.options.useColors) {
+    msg = colors.red(msg);
+  }
+
+  console.error(msg);
 };
 
 
@@ -113,7 +124,7 @@ ReplicaSet.prototype.start = function() {
 
     var process = shell.exec(cmdString, { 
       async: true,
-      silent: !self.options.logToConsole,
+      silent: !self.options.verbose,
     });
 
     self.log('Launched instance (pid ' + process.pid + ') listening on port ' + port + ', folder: ' + instanceDataFolder);
