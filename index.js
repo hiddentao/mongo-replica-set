@@ -7,6 +7,7 @@ var _ = require('lodash'),
   Q = require('bluebird'),
   path = require('path'),
   shell = require('shelljs'),
+  spawn = require('cross-spawn'),
   util = require('util');
 
 
@@ -14,7 +15,7 @@ var _ = require('lodash'),
 
 /**
  * A replica set.
- * 
+ *
  * @param {Object} [options] Create options.
  * @param {Number} [options.numInstances] no. of instances to create (default is 3).
  * @param {Object} [options.startPort] Port number to start allocating at (default is 27117).
@@ -80,7 +81,7 @@ ReplicaSet.prototype.logErr = function(msg) {
 ReplicaSet.prototype.stop = function() {
   var self = this;
 
-  self.log('Stopping replica set');
+  self.log(1 < self.options.numInstances ? 'Stopping replica set' : 'Stopping host');
 
   return Q.map(self.processes, function(p) {
     // if not yet killed then kill and wait
@@ -113,42 +114,19 @@ ReplicaSet.prototype.stop = function() {
 ReplicaSet.prototype.start = function() {
   var self = this;
 
-  self.log('Initialise replica set ' + self.name);
+  var numInstances = self.options.numInstances;
 
-  _.times(self.options.numInstances, function(i) {
-    var instanceDataFolder = path.join(self.options.baseFolder, 'data' + i);
+  if (1 === numInstances) {
+    self.log('Initialise single host');
 
-    self.log('Create data folder: ' + instanceDataFolder);
+    self._startHost(0)
+  } else {
+    self.log('Initialise replica set ' + self.name);
 
-    shell.mkdir('-p', instanceDataFolder);
-
-    self.log('Launch instance ' + i);
-
-    var port = (self.options.startPort + i);
-
-    var cmdString = 'mongod --port ' + port + ' --dbpath ' + instanceDataFolder + ' --replSet ' + self.name + ' --smallfiles --oplogSize 128';
-
-    self.log(cmdString);
-
-    var process = shell.exec(cmdString, { 
-      async: true,
-      silent: !self.options.verbose,
+    _.times(self.options.numInstances, function(i) {
+      self._startHost(i, self.name)
     });
-
-    self._hosts.push('127.0.0.1:' + port);
-
-    self.log('Launched instance (pid ' + process.pid + ') listening on port ' + port + ', folder: ' + instanceDataFolder);
-
-    process.on('exit', function(code, signal) {
-      process.killed = {
-        pid: process.pid,
-        code: code,
-        signal: signal
-      };
-    });
-
-    self.processes.push(process);    
-  });
+  }
 
   // wait for processes to startup
   return Q.delay(1500)
@@ -168,31 +146,80 @@ ReplicaSet.prototype.start = function() {
 
       var scriptPath = path.join(self.options.baseFolder, 'setup.js');
 
-      self.log('Creating shell script: ' + scriptPath);
+      if (1 < numInstances) {
+        self.log('Creating shell script: ' + scriptPath);
 
-      var lines = [
-        'rs.initiate({ _id: "' + self.name + '", members: [ { "_id": 1, "host": "127.0.0.1:' + self.options.startPort + '"} ] });',
-      ]
-      for (var i=1; i<self.options.numInstances; ++i) {
-        lines.push('rs.add("127.0.0.1:' + (self.options.startPort + i) + '");');
+        var lines = [
+          'rs.initiate({ _id: "' + self.name + '", members: [ { "_id": 1, "host": "127.0.0.1:' + self.options.startPort + '"} ] });',
+        ]
+        for (var i=1; i<self.options.numInstances; ++i) {
+          lines.push('rs.add("127.0.0.1:' + (self.options.startPort + i) + '");');
+        }
+
+        fs.writeFileSync(scriptPath, lines.join('\n'));
+
+        self.log('Executing shell script');
+
+        self._exec('mongo --port ' + self.options.startPort + ' ' + scriptPath, 'setup-output.txt');
       }
 
-      fs.writeFileSync(scriptPath, lines.join('\n'));
-
-      self.log('Executing shell script');
-
-      self._exec('mongo --port ' + self.options.startPort + ' ' + scriptPath, 'setup-output.txt');
-
-      self.log('Checking replica status');
+      self.log(1 < numInstances ? 'Checking replica status' : 'Checking host status');
 
       self._exec('mongo --port ' + self.options.startPort + ' --eval "JSON.stringify(rs.status());"', 'status-output.txt');
 
-      self.log('Replica set ready');
+      self.log(1 < numInstances ? 'Replica set ready' : 'Host ready');
 
       self.emit('ready');
     });
 };
 
+
+ReplicaSet.prototype._startHost = function(hostNum, replicataSetName) {
+  var self = this;
+
+  var instanceDataFolder = path.join(self.options.baseFolder, 'data' + hostNum);
+
+  self.log('Create data folder: ' + instanceDataFolder);
+
+  shell.mkdir('-p', instanceDataFolder);
+
+  self.log('Launch instance ' + hostNum);
+
+  var port = (self.options.startPort + hostNum);
+
+  var replicaOptions = replicataSetName ? ['--replSet', replicataSetName] : []
+
+  var cmdString = [
+    'mongod',
+    '--port',
+    port,
+    '--dbpath',
+    instanceDataFolder,
+    '--smallfiles',
+    '--oplogSize',
+    128
+  ].concat(replicaOptions)
+
+  self.log(cmdString.join(' '));
+
+  var childProcess = spawn(cmdString[0], cmdString.slice(1), {
+    stdio: self.options.verbose ? 'pipe' : 'ignore'
+  })
+
+  childProcess.on('exit', function(code, signal) {
+    childProcess.killed = {
+      pid: childProcess.pid,
+      code: code,
+      signal: signal
+    };
+  });
+
+  self._hosts.push('127.0.0.1:' + port);
+
+  self.log('Launched instance (pid ' + childProcess.pid + ') listening on port ' + port + ', folder: ' + instanceDataFolder);
+
+  self.processes.push(childProcess);
+}
 
 
 ReplicaSet.prototype._exec = function(command, outputFileName) {
@@ -207,7 +234,3 @@ ReplicaSet.prototype._exec = function(command, outputFileName) {
   var lines = fs.readFileSync(outputFilePath).toString();
   this.log("---------------------\n" + lines + "---------------------");
 };
-
-
-
-

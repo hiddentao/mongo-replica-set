@@ -5,15 +5,15 @@ var program = require('commander'),
   ReplicaSet = require('./').ReplicaSet;
 
 
- 
+
 program
   .version(require('./package.json').version)
   .option('-d, --data [folder]', 'Base folder for data storage (Default: auto-created folder in system temp folder)', null)
-  .option('-n, --num [num]', 'No. of instances to launch (Default: 3)', 3)
+  .option('-n, --num [num]', 'No. of instances to launch. Use 1 to launch a single non-replica host. (Default: 3)', 3)
   .option('-p, --port [port]', 'Starting port number for instances (Default: 27117)', 27117)
   .option('-v, --verbose', 'Verbose output')
   .parse(process.argv);
- 
+
 var config = {
   numInstances: parseInt(program.num),
   startPort: parseInt(program.port),
@@ -31,12 +31,12 @@ var rs = new ReplicaSet(config);
 
 rs.start()
   .then(function() {
-    console.log('>>>> Replica set ready: ' + rs.getHosts().join(', '));
+    console.log('>>>> Ready: ' + rs.getHosts().join(', '));
   })
   .catch(function(err) {
     console.error(err);
 
-    console.log('>>>> Stopping replica set');
+    console.log('>>>> Stopping');
 
     return rs.stop();
   });
