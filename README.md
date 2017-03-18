@@ -1,6 +1,6 @@
 # mongo-replica-set
 
-Command-line tool and API to quickly setup a MongoDB replica set for 
+Command-line tool and API to quickly setup a MongoDB host or replica set for
 development purposes, based on the [official tutorial](http://docs.mongodb.org/manual/tutorial/deploy-replica-set-for-testing/).
 
 ## Installation
@@ -41,8 +41,8 @@ $ mongo-replica-set
 >>> Replica set ready: 127.0.0.1:27117, 127.0.0.1:27118, 127.0.0.1:27119
 ```
 
-You can then (in a new terminal window) use `mongo` to connect to the instances, 
-which should be running at `localhost:27117`, `localhost:27118` and 
+You can then (in a new terminal window) use `mongo` to connect to the instances,
+which should be running at `localhost:27117`, `localhost:27118` and
 `localhost:27119` respectively. Eg:
 
 ```bash
@@ -52,13 +52,18 @@ connecting to: 127.0.0.1:27117/test
 rs_515_1429031406166:PRIMARY> show dbs;
 admin  (empty)
 local  0.281GB
-rs_515_1429031406166:PRIMARY> 
+rs_515_1429031406166:PRIMARY>
 ```
-Press `CTRL+C` in the original window to terminate the instances and clean up 
+Press `CTRL+C` in the original window to terminate the instances and clean up
 the replica set.
 
-_If any errors occur during initialisation the command will exit and clean up 
+_Note: If any errors occur during initialisation the command will exit and clean up
 the replica set instances and data folders._
+
+**Single host**
+
+If you specify the number of hosts as 1 then a single non-replica-set host
+will be launched.
 
 ### API
 
@@ -79,7 +84,7 @@ rs.start()
   });
 ```
 
-You can pass options to the `ReplicaSet` constructor, similar to the command-line 
+You can pass options to the `ReplicaSet` constructor, similar to the command-line
 tool:
 
 ```js
@@ -94,14 +99,14 @@ var rs = new ReplicaSet({
 rs.start();
 ```
 
-Once the replica set is running you can obtain the `hostname:port` connection 
+Once the replica set is running you can obtain the `hostname:port` connection
 strings:
 
 ```js
 var conn = rs.getHosts();
 
 // [ '127.0.0.1:55000', '127.0.0.1:55001', '127.0.0.1:55002']
-``` 
+```
 
 ## Contributing
 
@@ -110,4 +115,3 @@ Contributions are welcome! Please see `CONTRIBUTING.md`.
 ## LICENSE
 
 MIT - see `LICENSE.md`.
-
